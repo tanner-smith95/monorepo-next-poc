@@ -1,8 +1,11 @@
 {
   "name": "monorepo-next-poc",
   "version": "1.0.0",
-  "main": "index.js",
+  "private": true,
   "repository": "git@github.com:tanner-smith95/monorepo-next-poc.git",
   "author": "Tanner Smith <tanner.smith@kinandcarta.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "workspaces": [
+    "sites/*"
+  ]
 }
