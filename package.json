@@ -2,10 +2,15 @@
   "name": "monorepo-next-poc",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "repository": "git@github.com:tanner-smith95/monorepo-next-poc.git",
   "author": "Tanner Smith <tanner.smith@kinandcarta.com>",
   "license": "MIT",
   "workspaces": [
     "sites/*"
-  ]
+  ],
+  "dependencies": {
+    "@contentstack/management": "^1.7.0",
+    "dotenv": "^16.0.3"
+  }
 }

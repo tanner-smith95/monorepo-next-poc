@@ -143,7 +143,7 @@
     tslib "^2.3.1"
     uuid "^8.3.2"
 
-"@contentstack/management@^1.6.0":
+"@contentstack/management@^1.6.0", "@contentstack/management@^1.7.0":
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/@contentstack/management/-/management-1.7.0.tgz#1e6755f566e2df1a5b1bbc2b1483cb021ef355c2"
   integrity sha512-qXBptJ4Fb0iPuHT/P+y14U3ElCHtgxWhJK6yX/BbFYlXzoQVC8cENtLoLD9aOPbI3zrVD2piOWzux7VX5NxtIg==
