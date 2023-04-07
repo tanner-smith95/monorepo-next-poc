@@ -5,6 +5,30 @@ import getPlaceholders from "../../collections/getPlaceholdes";
 import modelFragments from "../../queries/modelFragments";
 import PlaceholderTemplate from "../../components/templates/placeholderTemplate";
 
+import {
+  ApolloClient,
+  InMemoryCache,
+  gql,
+  HttpLink,
+  from,
+} from "@apollo/client";
+
+let fetch = require("node-fetch");
+
+const link = new HttpLink({
+  uri: `https://graphql.contentstack.com/stacks/${process.env.CONTENTSTACK_API_KEY}?environment=${process.env.CONTENTSTACK_ENVIRONMENT}`,
+  headers: {
+    access_token: process.env.CONTENTSTACK_DELIVERY_TOKEN,
+    branch: process.env.CONTENTSTACK_BRANCH || "main",
+  },
+  fetch,
+});
+
+const client = new ApolloClient({
+  link: from([link]),
+  cache: new InMemoryCache(),
+});
+
 export default function Page({ data }) {
   return data?.all_placeholder_content?.items?.[0] ? (
     <PlaceholderTemplate pageData={data?.all_placeholder_content?.items?.[0]} />
@@ -55,6 +79,24 @@ export async function getStaticProps(context: any) {
   console.log(
     `getStaticProps[...slug] ------------------------------------------------------------------------`
   );
+  console.log("$$$$$$$$$$$$$$$$$", link);
+
+  await client
+    .query({
+      query: gql`
+        query {
+          all_assets {
+            items {
+              filename
+              url
+            }
+          }
+        }
+      `,
+    })
+    .then((result) =>
+      console.log("%%%%%%%%%%%%%%%%%%%%%%%%\n", JSON.stringify(result, null, 2))
+    );
 
   // const { params: { slug } = {} } = context ?? {};
 

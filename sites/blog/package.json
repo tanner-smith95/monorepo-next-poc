@@ -10,10 +10,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.7.11",
     "@contentstack/json-rte-serializer": "^2.0.0",
     "@contentstack/management": "^1.6.0",
     "algoliasearch": "^4.14.2",
     "dotenv": "^16.0.3",
+    "graphql": "^16.6.0",
     "html-react-parser": "^3.0.4",
     "next": "13.1.1",
     "react": "18.2.0",
