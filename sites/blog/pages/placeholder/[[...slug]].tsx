@@ -72,7 +72,6 @@ export async function getStaticProps(context: any) {
     }
   }
 `);
-  // .then((result) => console.log("%%%%%%%%%%%%%%%%%%%%%%%%\n", result));
 
   // const queryArray = [
   //   {

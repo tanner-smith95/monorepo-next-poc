@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import queryData from "../../utils/contentstack/queryData";
+import queryData from "../../utils/apollo/queryData";
 import getPlaceholders from "../../collections/getPlaceholdes";
 import modelFragments from "../../queries/modelFragments";
 import PlaceholderTemplate from "../../components/templates/placeholderTemplate";
@@ -58,31 +58,25 @@ export async function getStaticProps(context) {
     `getStaticProps[...slug] ------------------------------------------------------------------------`
   );
 
-  const { params: { slug } = {} } = context ?? {};
+  const slug = context?.params?.slug || [];
 
   const locale = slug.pop();
 
   console.log("Page route:", slug.join("/"));
 
-  const queryArray = [
-    {
-      type: "all_placeholder_content_2",
-      params: {
-        limit: 1,
-        where: `{url: "${slug?.join("/")}"}`,
-        locale: locale,
-      },
-      query: `{
-        ${modelFragments?.placeholderContent2}
-      }`,
-    },
-  ];
-
-  const response = await queryData(queryArray);
+  const response = await queryData(`
+  query {
+    all_placeholder_content_2(limit: 1, where: {url: "${slug?.join(
+      "/"
+    )}"}, locale: "${locale}") {
+      ${modelFragments.placeholderContent2}
+    }
+  }
+`);
 
   return {
     props: {
-      data: response || "NO DATA",
+      data: response?.data || "NO DATA",
     },
   };
 }
