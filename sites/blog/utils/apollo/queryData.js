@@ -1,13 +1,12 @@
-import "../styles/globals.css";
 import {
   ApolloClient,
-  ApolloProvider,
   InMemoryCache,
+  gql,
   HttpLink,
   from,
 } from "@apollo/client";
 
-import fetch from "node-fetch";
+let fetch = require("node-fetch");
 
 const link = new HttpLink({
   uri: `https://graphql.contentstack.com/stacks/${process.env.CONTENTSTACK_API_KEY}?environment=${process.env.CONTENTSTACK_ENVIRONMENT}`,
@@ -23,12 +22,14 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
-function MyApp({ Component, pageProps }) {
-  return (
-    <ApolloProvider client={client}>
-      <Component {...pageProps} />
-    </ApolloProvider>
-  );
+async function queryData(query) {
+  const response = await client.query({
+    query: gql`
+      ${query}
+    `,
+  });
+
+  return response;
 }
 
-export default MyApp;
+export default queryData;

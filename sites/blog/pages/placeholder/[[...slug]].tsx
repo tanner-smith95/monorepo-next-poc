@@ -1,33 +1,10 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
-import queryData from "../../utils/contentstack/queryData";
+// import queryData from "../../utils/contentstack/queryData";
+import queryData from "../../utils/apollo/queryData";
 import getPlaceholders from "../../collections/getPlaceholdes";
 import modelFragments from "../../queries/modelFragments";
 import PlaceholderTemplate from "../../components/templates/placeholderTemplate";
-
-import {
-  ApolloClient,
-  InMemoryCache,
-  gql,
-  HttpLink,
-  from,
-} from "@apollo/client";
-
-let fetch = require("node-fetch");
-
-const link = new HttpLink({
-  uri: `https://graphql.contentstack.com/stacks/${process.env.CONTENTSTACK_API_KEY}?environment=${process.env.CONTENTSTACK_ENVIRONMENT}`,
-  headers: {
-    access_token: process.env.CONTENTSTACK_DELIVERY_TOKEN,
-    branch: process.env.CONTENTSTACK_BRANCH || "main",
-  },
-  fetch,
-});
-
-const client = new ApolloClient({
-  link: from([link]),
-  cache: new InMemoryCache(),
-});
 
 export default function Page({ data }) {
   return data?.all_placeholder_content?.items?.[0] ? (
@@ -79,26 +56,6 @@ export async function getStaticProps(context: any) {
   console.log(
     `getStaticProps[...slug] ------------------------------------------------------------------------`
   );
-  console.log("$$$$$$$$$$$$$$$$$", link);
-
-  await client
-    .query({
-      query: gql`
-        query {
-          all_assets {
-            items {
-              filename
-              url
-            }
-          }
-        }
-      `,
-    })
-    .then((result) =>
-      console.log("%%%%%%%%%%%%%%%%%%%%%%%%\n", JSON.stringify(result, null, 2))
-    );
-
-  // const { params: { slug } = {} } = context ?? {};
 
   const slug = context?.params?.slug || [];
 
@@ -106,25 +63,39 @@ export async function getStaticProps(context: any) {
 
   console.log("Page route:", slug.join("/"));
 
-  const queryArray = [
-    {
-      type: "all_placeholder_content",
-      params: {
-        limit: 1,
-        where: `{url: "${slug?.join("/")}"}`,
-        locale: locale,
-      },
-      query: `{
-        ${modelFragments.placeholderContent}
-      }`,
-    },
-  ];
+  const response = await queryData(`
+  query {
+    all_placeholder_content(limit: 1, where: {url: "${slug?.join(
+      "/"
+    )}"}, locale: "${locale}") {
+      ${modelFragments.placeholderContent}
+    }
+  }
+`);
+  // .then((result) => console.log("%%%%%%%%%%%%%%%%%%%%%%%%\n", result));
 
-  const response = await queryData(queryArray);
+  // const queryArray = [
+  //   {
+  //     type: "all_placeholder_content",
+  //     params: {
+  //       limit: 1,
+  //       where: `{url: "${slug?.join("/")}"}`,
+  //       locale: locale,
+  //     },
+  //     query: `{
+  //       ${modelFragments.placeholderContent}
+  //     }`,
+  //   },
+  // ];
+
+  // const response = await queryData(queryArray);
+
+  // console.log(JSON.stringify(response, null, 2));
 
   return {
     props: {
-      data: response || "NO DATA",
+      data: response?.data || "NO DATA",
+      // data: response || "NO DATA",
     },
   };
 }
