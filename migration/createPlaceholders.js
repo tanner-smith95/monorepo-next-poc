@@ -8,7 +8,7 @@ dotenv.config();
 async function createPlaceholders() {
   const contentType = "placeholder_content";
   const numPlaceholders = 100000;
-  const startIndex = 30323;
+  const startIndex = 30810;
 
   let pause = false;
 
@@ -112,7 +112,7 @@ async function createPlaceholders() {
         })
       );
 
-      if (promises.length >= 5) {
+      if (promises.length >= 3) {
         await Promise.all(promises);
 
         pause = true;

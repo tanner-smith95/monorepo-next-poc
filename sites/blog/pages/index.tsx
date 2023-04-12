@@ -1,5 +1,6 @@
 import { GetStaticProps } from "next";
-import queryData from "../utils/contentstack/queryData";
+// import queryData from "../utils/contentstack/queryData";
+import queryData from "../utils/apollo/queryData";
 import {
   InstantSearch,
   SearchBox,
@@ -9,6 +10,8 @@ import {
   HitsPerPage,
 } from "react-instantsearch-hooks-web";
 import algoliasearch from "algoliasearch";
+
+import modelFragments from "../queries/modelFragments";
 
 export default function Home({ data }) {
   // Algolia Search
@@ -83,58 +86,83 @@ export default function Home({ data }) {
 }
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  const queryArray = [
-    {
-      type: "englishPlaceholders: all_placeholder_content",
-      params: {
-        limit: 5,
-        locale: "en-us",
-      },
-      query: "{ items { title system { uid locale } } }",
-    },
-    {
-      type: "frenchPlaceholders: all_placeholder_content",
-      params: {
-        limit: 5,
-        locale: "fr",
-      },
-      query: "{ items { title system { uid locale } } }",
-    },
-    {
-      type: "spanishPlaceholders: all_placeholder_content",
-      params: {
-        limit: 5,
-        locale: "es",
-      },
-      query: "{ items { title system { uid locale } } }",
-    },
-    {
-      type: "germanPlaceholders: all_placeholder_content",
-      params: {
-        limit: 5,
-        locale: "de",
-      },
-      query: "{ items { title system { uid locale } } }",
-    },
-    {
-      type: "Placeholder2English: all_placeholder_content_2",
-      params: {
-        limit: 5,
-        locale: "en-us",
-      },
-      query: "{ items { title system { uid locale } } }",
-    },
-    {
-      type: "Placeholder2French: all_placeholder_content_2",
-      params: {
-        limit: 5,
-        locale: "fr",
-      },
-      query: "{ items { title system { uid locale } } }",
-    },
-  ];
+  const collectionLimit = 5;
 
-  const response = await queryData(queryArray);
+  const response = await queryData(`
+  query {
+    englishPlaceholders: all_placeholder_content(limit: ${collectionLimit}, locale: "en-us") {
+      ${modelFragments.placeholderContent}
+    }
+    frenchPlaceholders: all_placeholder_content(limit: ${collectionLimit}, locale: "fr") {
+      ${modelFragments.placeholderContent}
+    }
+    spanishPlaceholders: all_placeholder_content(limit: ${collectionLimit}, locale: "es") {
+      ${modelFragments.placeholderContent}
+    }
+    germanPlaceholders: all_placeholder_content(limit: ${collectionLimit}, locale: "de") {
+      ${modelFragments.placeholderContent}
+    }
+    Placeholder2English: all_placeholder_content_2(limit: ${collectionLimit}, locale: "en-us") {
+      ${modelFragments.placeholderContent2}
+    }
+    Placeholder2French: all_placeholder_content_2(limit: ${collectionLimit}, locale: "fr") {
+      ${modelFragments.placeholderContent2}
+    }
+  }
+`);
+
+  // const queryArray = [
+  //   {
+  //     type: "englishPlaceholders: all_placeholder_content",
+  //     params: {
+  //       limit: 5,
+  //       locale: "en-us",
+  //     },
+  //     query: "{ items { title system { uid locale } } }",
+  //   },
+  //   {
+  //     type: "frenchPlaceholders: all_placeholder_content",
+  //     params: {
+  //       limit: 5,
+  //       locale: "fr",
+  //     },
+  //     query: "{ items { title system { uid locale } } }",
+  //   },
+  //   {
+  //     type: "spanishPlaceholders: all_placeholder_content",
+  //     params: {
+  //       limit: 5,
+  //       locale: "es",
+  //     },
+  //     query: "{ items { title system { uid locale } } }",
+  //   },
+  //   {
+  //     type: "germanPlaceholders: all_placeholder_content",
+  //     params: {
+  //       limit: 5,
+  //       locale: "de",
+  //     },
+  //     query: "{ items { title system { uid locale } } }",
+  //   },
+  //   {
+  //     type: "Placeholder2English: all_placeholder_content_2",
+  //     params: {
+  //       limit: 5,
+  //       locale: "en-us",
+  //     },
+  //     query: "{ items { title system { uid locale } } }",
+  //   },
+  //   {
+  //     type: "Placeholder2French: all_placeholder_content_2",
+  //     params: {
+  //       limit: 5,
+  //       locale: "fr",
+  //     },
+  //     query: "{ items { title system { uid locale } } }",
+  //   },
+  // ];
+
+  // const response = await queryData(queryArray);
 
   // *************************************************************************************
   // Generate a list of placeholder UIDs
@@ -206,7 +234,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   return {
     props: {
-      data: response || "NOT FOUND",
+      data: response?.data || "NOT FOUND",
     },
   };
 };
